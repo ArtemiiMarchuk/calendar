@@ -182,9 +182,13 @@ addEventListener('DOMContentLoaded', function () {
 
   calendarWithIntervals('.onemore-calendars', '#calendar-two');
 
-  saveCalendarData('.onemore-calendars', '#calendar-two');
+  $(".savedataOne").click(function(){
+    saveCalendarData('.three-calendars', "#calendar-one");
+  });
 
-
+  $(".savedataTwo").click(function(){
+    saveCalendarData('.onemore-calendars', '#calendar-two');
+  });
 
 
 
