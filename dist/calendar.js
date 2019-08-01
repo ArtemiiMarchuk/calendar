@@ -1,6 +1,4 @@
 addEventListener('DOMContentLoaded', function () {
-  var plus_5_days = new Date;
-  plus_5_days.setDate(plus_5_days.getDate() + 5);
   pickmeup('.three-calendars', {
     flat      : true,
     date      : new Date,
@@ -21,150 +19,202 @@ addEventListener('DOMContentLoaded', function () {
 	}
 
   function formatDate(date) {
-    var day = date.getDate();
-    if(day < 10){day = "0" + day}
-    var month = date.getMonth() + 1;
-    if(month < 10){month = "0" + month}
-    var year = date.getFullYear();
+    let day = date.getDate();
+    day = (day < 10) ? '0' + day : day;
+    let month = date.getMonth() + 1;
+    month = (month < 10) ? '0' + month : month;
+    let year = date.getFullYear();
 
     return year + '-' + month + '-' + day;
   }
 
+  class Calendar {
+    constructor(calendar,number) {
+      this.calendar = calendar;
+      this.number = +number;
+      this.end = new Date;
+      this.start = new Date;
+    }
+
+    previousDay(){
+      this.start.setDate(this.start.getDate() - this.number);
+      this.end.setDate(this.end.getDate() - 1);
+      this.setCalendar();
+    }
+
+    previousMonth(){
+      this.start.setMonth(this.start.getMonth() - this.number,[1]);
+      this.end.setMonth(this.end.getMonth() - 1, [1]);
+      this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
+      this.setCalendar();
+    }
+
+    previousWeek(){
+      this.start.setDate(this.start.getDate() - this.start.getDay() + 1 - 7 * this.number);
+      this.end.setDate(this.end.getDate() - this.end.getDay());
+      this.setCalendar();
+    }
+
+    previousQuarter(){
+      this.start.setMonth((this.start.getMonth() - (this.start.getMonth() % 3)) - 3 * this.number, [1]);
+      this.end.setMonth(this.end.getMonth() - (this.end.getMonth() % 3) - 1, [1]);
+      this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
+      this.setCalendar();
+    }
+
+    previousYear(){
+      this.start.setYear(this.start.getYear() + 1900 - this.number);
+      this.start.setMonth(0,[1]);
+      this.end.setYear(this.end.getYear() + 1900 - 1);
+      this.end.setMonth(11,[31]);
+      this.setCalendar();
+    }
+
+    nextDay(){
+      this.start.setDate(this.start.getDate() + 1);
+      this.end.setDate(this.end.getDate() + this.number);
+      this.setCalendar();
+    }
+
+    nextMonth(){
+      this.start.setMonth(this.start.getMonth() + 1,[1]);
+      this.end.setMonth(this.end.getMonth() + this.number, [1]);
+      this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
+      this.setCalendar();
+    }
+
+    nextWeek(){
+      this.start.setDate(this.start.getDate() + (7 - this.start.getDay())  + 1);
+      this.end.setDate(this.end.getDate() + (7 - this.end.getDay()) + 7 * this.number);
+      this.setCalendar();
+    }
+
+    nextQuarter(){
+      this.start.setMonth(this.start.getMonth() + (this.start.getMonth() % 3) + 1, [1]);
+      this.end.setMonth((this.end.getMonth() + (this.end.getMonth() % 3)) + 3 * this.number, [1]);
+      this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
+      this.setCalendar();
+    }
+
+    nextYear(){
+      this.start.setYear(this.start.getYear() + 1900 + 1 );
+      this.start.setMonth(0,[1]);
+      this.end.setYear(this.end.getYear() + 1900 + this.number);
+      this.end.setMonth(11,[31]);
+      this.setCalendar();
+    }
+
+    setCalendar() {
+      pickmeup(this.calendar).set_date([this.start, this.end]);
+    }
+
+    static today(calendarName){
+      pickmeup(calendarName).set_date(new Date);
+    }
+
+    static yesterday(calendarName){
+      pickmeup(calendarName).set_date(new Date().setDate(new Date().getDate() - 1));
+    }
+
+    static weekToDate(calendarName){
+      let now = new Date;
+      pickmeup(calendarName).set_date([now.setDate(now.getDate() - now.getDay() + 1), new Date]);
+    }
+
+    static monthToDate(calendarName){
+      pickmeup(calendarName).set_date([new Date().setMonth(new Date().getMonth(),[1]), new Date]);
+    }
+
+    static quarterToDate(calendarName){
+      let now = new Date;
+      pickmeup(calendarName).set_date([now.setMonth(now.getMonth() - (now.getMonth() % 3),[1]), new Date]);
+    }
+
+    static yearToDate(calendarName){
+      pickmeup(calendarName).set_date([new Date().setMonth(0,[1]), new Date]);
+    }
+  }
+
   function calendarWithIntervals(calendarName, sectionId){
+
     $( sectionId + " button" ).click(function(){
-      $( sectionId + ' .nextValue, ' + sectionId + ' .previousValue').val('');
-    });
 
-    $( sectionId + " .today" ).click(function() {
-      pickmeup(calendarName).set_date([new Date, new Date]);
-
-    });
-
-    $( sectionId + " .yesterday" ).click(function() {
-      var yesterday = new Date;
-      yesterday.setDate(yesterday.getDate() - 1);
-      pickmeup(calendarName).set_date([yesterday, yesterday]);
-    });
-
-    $( sectionId + " .weekToDate" ).click(function() {
-      var week = new Date;
-      week.setDate(week.getDate() - week.getDay() + 1);
-      pickmeup(calendarName).set_date([week, new Date]);
-    });
-
-    $( sectionId + " .monthToDate" ).click(function() {
-      var month = new Date;
-      month.setMonth(month.getMonth(),[1]);
-      pickmeup(calendarName).set_date([month, new Date]);
-    });
-
-    $( sectionId + " .quarterToDate" ).click(function() {
-      var quarter = new Date;
-      quarter.setMonth((quarter.getMonth() - (quarter.getMonth() % 3)), [1]);
-      pickmeup(calendarName).set_date([quarter, new Date]);
-    });
-
-    $( sectionId + " .yearToDate" ).click(function() {
-      var year = new Date;
-      year.setMonth(0, [1]);
-      pickmeup(calendarName).set_date([year, new Date]);
+      switch ($(this).attr('class')) {
+        case 'today':
+          Calendar.today(calendarName);
+          break;
+        case 'yesterday':
+          Calendar.yesterday(calendarName);
+          break;
+        case 'weekToDate':
+          Calendar.weekToDate(calendarName);
+          break;
+        case 'monthToDate':
+          Calendar.monthToDate(calendarName);
+          break;
+        case 'quarterToDate':
+          Calendar.quarterToDate(calendarName);
+          break;
+        case 'yearToDate':
+          Calendar.yearToDate(calendarName);
+          break;
+        default:
+      }
     });
 
     $( sectionId + ' .previous, ' + sectionId + ' .previousValue').on('input', function() {
-      var value = $(sectionId + ' .previous').val();
-      var number = $(sectionId + ' .previousValue').val();
-      if(value != "default" && number.match(/^[-\+]?\d+/) != null && number != 0){
-        switch(value) {
+      let typeOfInterval = $(sectionId + ' .previous').val();
+      let number = $(sectionId + ' .previousValue').val();
+      if(typeOfInterval != "default" && number.match(/^[-\+]?\d+/) != null && number != 0){
+
+        let calendar = new Calendar(calendarName,number);
+
+        switch(typeOfInterval) {
           case "days":
-            var start = new Date;
-            start.setDate(start.getDate() - number);
-            var end = new Date;
-            end.setDate(end.getDate() - 1);
-            pickmeup(calendarName).set_date([start, end]);
+            calendar.previousDay();
             break;
           case "months":
-            var start = new Date;
-            start.setMonth(start.getMonth() - number,[1]);
-            var end = new Date;
-            end.setMonth(end.getMonth() - 1, [1]);
-            end.setMonth(end.getMonth(),[end.daysInMonth()]);
-            pickmeup(calendarName).set_date([start, end]);
+            calendar.previousMonth();
             break;
           case "weeks":
-            var start = new Date;
-            start.setDate(start.getDate() - start.getDay() + 1 - 7 * number);
-            var end = new Date;
-            end.setDate(end.getDate() - end.getDay())
-            pickmeup(calendarName).set_date([start, end]);
+            calendar.previousWeek();
             break;
           case "quarters":
-            var start = new Date;
-            start.setMonth((start.getMonth() - (start.getMonth() % 3)) - 3 * number, [1]);
-            var end = new Date;
-            end.setMonth(end.getMonth() - (end.getMonth() % 3) - 1, [1]);
-            end.setMonth(end.getMonth(),[end.daysInMonth()]);
-            pickmeup(calendarName).set_date([start, end]);
+            calendar.previousQuarter();
             break;
           case "years":
-            var start = new Date;
-            start.setYear(start.getYear() + 1900 - number);
-            start.setMonth(0,[1]);
-            var end = new Date;
-            end.setYear(end.getYear() + 1900 - 1);
-            end.setMonth(11,[31]);
-            pickmeup(calendarName).set_date([start, end]);
+            calendar.previousYear();
             break;
         }
-      }else{};
+      }
 
     });
 
     $( sectionId + ' .next, ' + sectionId + ' .nextValue').on('input', function() {
-      var value = $(sectionId + ' .next').val();
-      var number = $(sectionId + ' .nextValue').val();
-      if(value != "default" && number.match(/^[-\+]?\d+/) != null && number != 0){
-        switch(value) {
+      let typeOfInterval = $(sectionId + ' .next').val();
+      let number = $(sectionId + ' .nextValue').val();
+      if(typeOfInterval != "default" && number.match(/^[-\+]?\d+/) != null && number != 0){
+
+        let calendar = new Calendar(calendarName,number);
+
+        switch(typeOfInterval) {
           case "days":
-            var start = new Date;
-            start.setDate(start.getDate() + 1);
-            var end = new Date;
-            end.setDate(end.getDate() + +number);
-            pickmeup(calendarName).set_date([start, end]);
+            calendar.nextDay();
             break;
           case "months":
-            var start = new Date;
-            start.setMonth(start.getMonth() + 1,[1]);
-            var end = new Date;
-            end.setMonth(end.getMonth() + +number, [1]);
-            end.setMonth(end.getMonth(),[end.daysInMonth()]);
-            pickmeup(calendarName).set_date([start, end]);
+            calendar.nextMonth();
             break;
           case "weeks":
-            var start = new Date;
-            start.setDate(start.getDate() + (7 - start.getDay())  + 1);
-            var end = new Date;
-            end.setDate(end.getDate() + (7 - end.getDay()) + 7 * number)
-            pickmeup(calendarName).set_date([start, end]);
+            calendar.nextWeek();
             break;
           case "quarters":
-            var start = new Date;
-            start.setMonth(start.getMonth() + (start.getMonth() % 3) + 1, [1]);
-            var end = new Date;
-            end.setMonth((end.getMonth() + (end.getMonth() % 3)) + 3 * number, [1]);
-            end.setMonth(end.getMonth(),[end.daysInMonth()]);
-            pickmeup(calendarName).set_date([start, end]);
+            calendar.nextQuarter();
             break;
           case "years":
-            var start = new Date;
-            start.setYear(start.getYear() + 1900 + 1 );
-            start.setMonth(0,[1]);
-            var end = new Date;
-            end.setYear(end.getYear() + 1900 + +number);
-            end.setMonth(11,[31]);
-            pickmeup(calendarName).set_date([start, end]);
+            calendar.nextYear();
             break;
         }
-      }else{};
+      }
 
     });
   }
