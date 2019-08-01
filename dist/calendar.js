@@ -39,27 +39,23 @@ addEventListener('DOMContentLoaded', function () {
     previousDay(){
       this.start.setDate(this.start.getDate() - this.number);
       this.end.setDate(this.end.getDate() - 1);
-      this.setCalendar();
     }
 
     previousMonth(){
       this.start.setMonth(this.start.getMonth() - this.number,[1]);
       this.end.setMonth(this.end.getMonth() - 1, [1]);
       this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
-      this.setCalendar();
     }
 
     previousWeek(){
       this.start.setDate(this.start.getDate() - this.start.getDay() + 1 - 7 * this.number);
       this.end.setDate(this.end.getDate() - this.end.getDay());
-      this.setCalendar();
     }
 
     previousQuarter(){
       this.start.setMonth((this.start.getMonth() - (this.start.getMonth() % 3)) - 3 * this.number, [1]);
       this.end.setMonth(this.end.getMonth() - (this.end.getMonth() % 3) - 1, [1]);
       this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
-      this.setCalendar();
     }
 
     previousYear(){
@@ -67,33 +63,28 @@ addEventListener('DOMContentLoaded', function () {
       this.start.setMonth(0,[1]);
       this.end.setYear(this.end.getYear() + 1900 - 1);
       this.end.setMonth(11,[31]);
-      this.setCalendar();
     }
 
     nextDay(){
       this.start.setDate(this.start.getDate() + 1);
       this.end.setDate(this.end.getDate() + this.number);
-      this.setCalendar();
     }
 
     nextMonth(){
       this.start.setMonth(this.start.getMonth() + 1,[1]);
       this.end.setMonth(this.end.getMonth() + this.number, [1]);
       this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
-      this.setCalendar();
     }
 
     nextWeek(){
       this.start.setDate(this.start.getDate() + (7 - this.start.getDay())  + 1);
       this.end.setDate(this.end.getDate() + (7 - this.end.getDay()) + 7 * this.number);
-      this.setCalendar();
     }
 
     nextQuarter(){
       this.start.setMonth(this.start.getMonth() + (this.start.getMonth() % 3) + 1, [1]);
       this.end.setMonth((this.end.getMonth() + (this.end.getMonth() % 3)) + 3 * this.number, [1]);
       this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
-      this.setCalendar();
     }
 
     nextYear(){
@@ -101,7 +92,6 @@ addEventListener('DOMContentLoaded', function () {
       this.start.setMonth(0,[1]);
       this.end.setYear(this.end.getYear() + 1900 + this.number);
       this.end.setMonth(11,[31]);
-      this.setCalendar();
     }
 
     setCalendar() {
@@ -186,6 +176,8 @@ addEventListener('DOMContentLoaded', function () {
             calendar.previousYear();
             break;
         }
+
+        calendar.setCalendar();
       }
 
     });
@@ -214,6 +206,8 @@ addEventListener('DOMContentLoaded', function () {
             calendar.nextYear();
             break;
         }
+
+        calendar.setCalendar();
       }
 
     });
