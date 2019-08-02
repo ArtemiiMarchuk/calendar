@@ -14,10 +14,6 @@ addEventListener('DOMContentLoaded', function () {
     format	: 'Y-m-d'
   });
 
-  Date.prototype.daysInMonth = function() {
-		return 32 - new Date(this.getFullYear(), this.getMonth(), 32).getDate();
-	}
-
   function formatDate(date) {
     let day = date.getDate();
     day = (day < 10) ? '0' + day : day;
@@ -32,96 +28,88 @@ addEventListener('DOMContentLoaded', function () {
     constructor(calendar,number) {
       this.calendar = calendar;
       this.number = +number;
-      this.end = new Date;
-      this.start = new Date;
+      this.end = moment();
+      this.start = moment();
     }
 
     previousDay(){
-      this.start.setDate(this.start.getDate() - this.number);
-      this.end.setDate(this.end.getDate() - 1);
+      this.start.subtract(this.number, 'days');
+      this.end.subtract(1, 'days');
     }
 
     previousMonth(){
-      this.start.setMonth(this.start.getMonth() - this.number,[1]);
-      this.end.setMonth(this.end.getMonth() - 1, [1]);
-      this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
+      this.start.subtract(this.number, 'months').startOf('month');
+      this.end.subtract(1, 'months').endOf('month');
     }
 
     previousWeek(){
-      this.start.setDate(this.start.getDate() - this.start.getDay() + 1 - 7 * this.number);
-      this.end.setDate(this.end.getDate() - this.end.getDay());
+      this.start.subtract(this.number, 'weeks').startOf('isoWeek');
+      this.end.startOf('week');
     }
 
     previousQuarter(){
-      this.start.setMonth((this.start.getMonth() - (this.start.getMonth() % 3)) - 3 * this.number, [1]);
-      this.end.setMonth(this.end.getMonth() - (this.end.getMonth() % 3) - 1, [1]);
-      this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
+      this.start.subtract(this.number, 'quarters').startOf('quarter');
+      this.end.startOf('quarter').subtract(1, 'days');
     }
 
     previousYear(){
-      this.start.setYear(this.start.getYear() + 1900 - this.number);
-      this.start.setMonth(0,[1]);
-      this.end.setYear(this.end.getYear() + 1900 - 1);
-      this.end.setMonth(11,[31]);
+      this.start.subtract(this.number, 'years').startOf('year');
+      this.end.startOf('year').subtract(1, 'days');
     }
 
     nextDay(){
-      this.start.setDate(this.start.getDate() + 1);
-      this.end.setDate(this.end.getDate() + this.number);
+      this.end.add(this.number, 'days');
+      this.start.add(1, 'days');
     }
 
     nextMonth(){
-      this.start.setMonth(this.start.getMonth() + 1,[1]);
-      this.end.setMonth(this.end.getMonth() + this.number, [1]);
-      this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
+      this.end.add(this.number, 'months').endOf('month');
+      this.start.add(1, 'months').startOf('months');
     }
 
     nextWeek(){
-      this.start.setDate(this.start.getDate() + (7 - this.start.getDay())  + 1);
-      this.end.setDate(this.end.getDate() + (7 - this.end.getDay()) + 7 * this.number);
+      this.end.add(this.number, 'weeks').endOf('isoWeek');
+      this.start.add(1, 'weeks').startOf('isoWeek');
     }
 
     nextQuarter(){
-      this.start.setMonth(this.start.getMonth() + (this.start.getMonth() % 3) + 1, [1]);
-      this.end.setMonth((this.end.getMonth() + (this.end.getMonth() % 3)) + 3 * this.number, [1]);
-      this.end.setMonth(this.end.getMonth(),[this.end.daysInMonth()]);
+      this.end.add(this.number, 'quarters').endOf('quarter');
+      this.start.add(1, 'quarters').startOf('quarter');
     }
 
     nextYear(){
-      this.start.setYear(this.start.getYear() + 1900 + 1 );
-      this.start.setMonth(0,[1]);
-      this.end.setYear(this.end.getYear() + 1900 + this.number);
-      this.end.setMonth(11,[31]);
+      this.end.add(this.number, 'years').endOf('year');
+      this.start.add(1, 'years').startOf('year');
     }
 
     setCalendar() {
-      pickmeup(this.calendar).set_date([this.start, this.end]);
+      pickmeup(this.calendar).set_date([this.start.format(), this.end.format()]);
     }
 
     static today(calendarName){
-      pickmeup(calendarName).set_date(new Date);
+      pickmeup(calendarName).set_date(moment().format());
     }
 
     static yesterday(calendarName){
-      pickmeup(calendarName).set_date(new Date().setDate(new Date().getDate() - 1));
+      pickmeup(calendarName).set_date(moment().subtract(1, 'days').format());
     }
 
     static weekToDate(calendarName){
       let now = new Date;
-      pickmeup(calendarName).set_date([now.setDate(now.getDate() - now.getDay() + 1), new Date]);
+      pickmeup(calendarName).set_date([moment().startOf('isoWeek').format(), new Date]);
     }
 
     static monthToDate(calendarName){
-      pickmeup(calendarName).set_date([new Date().setMonth(new Date().getMonth(),[1]), new Date]);
+      pickmeup(calendarName).set_date([moment().startOf('month').format(), new Date]);
     }
 
     static quarterToDate(calendarName){
       let now = new Date;
-      pickmeup(calendarName).set_date([now.setMonth(now.getMonth() - (now.getMonth() % 3),[1]), new Date]);
+      pickmeup(calendarName).set_date([moment().startOf('quarter').format(), new Date]);
     }
 
     static yearToDate(calendarName){
-      pickmeup(calendarName).set_date([new Date().setMonth(0,[1]), new Date]);
+      pickmeup(calendarName).set_date([moment().startOf('year').format(), new Date]);
     }
   }
 
