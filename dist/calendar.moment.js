@@ -1,4 +1,6 @@
+
 addEventListener('DOMContentLoaded', function () {
+
   pickmeup('.three-calendars', {
     flat      : true,
     date      : new Date,
@@ -223,19 +225,26 @@ addEventListener('DOMContentLoaded', function () {
   });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**/
